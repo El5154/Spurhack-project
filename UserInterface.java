@@ -12,6 +12,9 @@ public class UserInterface{
     private JFrame frame;
     private JPanel mainPanel;
     private JPanel buttonPanel;
+    private String weekLimit;
+    private String monthLimit;
+    private String savingGoal;
 
     public static void main(String[] args) {
         UserInterface ui = new UserInterface();
@@ -73,7 +76,7 @@ public class UserInterface{
             setWeekButton.addActionListener(ev -> {   
                 JOptionPane setBudget = new JOptionPane("Budget Limit");
                 setBudget.setBounds(0, 0, 10, 10);
-                JOptionPane.showInputDialog(frame, "Set your weekly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
+                weekLimit = JOptionPane.showInputDialog(frame, "Set your weekly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
             });
 
             JButton setMonthButton = new JButton("Set Monthly Budget");
@@ -81,9 +84,9 @@ public class UserInterface{
             setMonthButton.addActionListener(ev -> {   
                 JOptionPane setBudget = new JOptionPane("Budget Limit");
                 setBudget.setBounds(0, 0, 10, 10);
-                JOptionPane.showInputDialog(frame, "Set your monthly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
+                monthLimit = JOptionPane.showInputDialog(frame, "Set your monthly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
             });
-            
+
             mainPanel.removeAll();
             mainPanel.add(setWeekButton);
             mainPanel.add(setMonthButton);
@@ -101,8 +104,12 @@ public class UserInterface{
         JButton savingButton = new JButton("Saving Goals");
         savingButton.setBounds(36, 0, 10, 10);
         savingButton.addActionListener(e -> {
-            // Your logic here
-            System.out.println("SAButton clicked!");
+            mainPanel.removeAll();
+            mainPanel.revalidate();
+            mainPanel.repaint();
+            JOptionPane setGoal = new JOptionPane("Saving Goal");
+            setGoal.setBounds(0, 0, 10, 10);
+            savingGoal = JOptionPane.showInputDialog(frame, "Set your saving goal:", "Saving Goal", JOptionPane.PLAIN_MESSAGE);
         });
 
         JButton exitButton = new JButton("Exit");
