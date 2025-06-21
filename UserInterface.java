@@ -4,12 +4,14 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 public class UserInterface{
 
     private JFrame frame;
     private JPanel mainPanel;
+    private JPanel buttonPanel;
 
     public static void main(String[] args) {
         UserInterface ui = new UserInterface();
@@ -17,12 +19,12 @@ public class UserInterface{
 
     public UserInterface() {
 
-        JFrame frame = new JFrame("Budget Tracker");
+        frame = new JFrame("Budget Tracker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(new Dimension(1000, 700));
         frame.setLayout(new BorderLayout());
 
-        JPanel buttonPanel = new JPanel();
+        buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.LIGHT_GRAY);
         buttonPanel.setPreferredSize(new Dimension(720, 35));
         mainPanel = new JPanel();
@@ -66,8 +68,27 @@ public class UserInterface{
         JButton budgetButton = new JButton("Budget");
         budgetButton.setBounds(12, 0, 10, 10);
         budgetButton.addActionListener(e -> {
-            // Your logic here
-            System.out.println("BButton clicked!");
+            JButton setWeekButton = new JButton("Set Weekly Budget");
+            setWeekButton.setBounds(0, 0, 10, 10);
+            setWeekButton.addActionListener(ev -> {   
+                JOptionPane setBudget = new JOptionPane("Budget Limit");
+                setBudget.setBounds(0, 0, 10, 10);
+                JOptionPane.showInputDialog(frame, "Set your weekly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
+            });
+
+            JButton setMonthButton = new JButton("Set Monthly Budget");
+            setMonthButton.setBounds(0, 0, 10, 10);
+            setMonthButton.addActionListener(ev -> {   
+                JOptionPane setBudget = new JOptionPane("Budget Limit");
+                setBudget.setBounds(0, 0, 10, 10);
+                JOptionPane.showInputDialog(frame, "Set your monthly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
+            });
+            
+            mainPanel.removeAll();
+            mainPanel.add(setWeekButton);
+            mainPanel.add(setMonthButton);
+            mainPanel.revalidate();
+            mainPanel.repaint();
         });
 
         JButton spendButton = new JButton("View Spending");
@@ -95,7 +116,7 @@ public class UserInterface{
         buttonPanel.add(spendButton);
         buttonPanel.add(savingButton);
         buttonPanel.add(exitButton);
-        frame.add(mainPanel, BorderLayout.CENTER);
+        frame.add(mainPanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
     }
