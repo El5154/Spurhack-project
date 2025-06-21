@@ -1,5 +1,4 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
 
 public class Transaction {
     private String name;
@@ -17,6 +16,35 @@ public class Transaction {
         this.amount = amount;
         this.date = date;
         this.category = category;
+    }
+
+    // setters used for when users want to make changes to a specific transaction
+    public void setName() {
+
+    }
+    public void setAmount() {
+
+    }
+    public void setDate() {
+        
+    }
+    public void setCategory() {
+
+    }
+
+
+    // getters for sorting or viewing history
+    public String getName() {
+        return this.name;
+    }
+    public double getAmount() {
+        return this.amount;
+    }
+    public LocalDate getDate() {
+        return this.date;
+    }
+    public Category getCategory() {
+        return this.category;
     }
 }
 
