@@ -7,6 +7,9 @@ import java.util.ArrayList;
 public class TransactionManager {
     private ArrayList<Transaction> allTransactions = new ArrayList<>();
 
+    public ArrayList<Transaction> getAllTransactions() {
+        return allTransactions;
+    }
     // methods for updating the transaction properties
     public void updateName(Transaction t, String name) {
         t.setName(name);
@@ -36,7 +39,10 @@ public class TransactionManager {
 
     public void addTransaction(Transaction t) {
         allTransactions.add(t);
-        saveTransactions();
+    }
+
+    public void removeTransaction(Transaction t) {
+        allTransactions.remove(t);
     }
 
     public void saveTransactions() {
@@ -50,6 +56,5 @@ public class TransactionManager {
             e.printStackTrace();
         }
     }
-
 }
 

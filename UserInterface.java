@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -58,6 +59,7 @@ public class UserInterface{
     private String monthLimit;
     private String savingGoal;
     private TransactionManager transactionManager = new TransactionManager();
+    private ArrayList<Transaction> allTransactions = transactionManager.getAllTransactions();
     private Transaction transaction;
     private boolean flag = true;
 
@@ -108,7 +110,6 @@ public class UserInterface{
                 String[] options = {"REVENUE", "EXPENSE"};
                 JComboBox<String> categoryDropBox = new JComboBox<>(options);
 
-                // Load and resize the icon
                 javax.swing.ImageIcon originalIcon = new javax.swing.ImageIcon("Revenue&Expense.png");
                 java.awt.Image scaledImage = originalIcon.getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH);
                 javax.swing.ImageIcon customIcon = new javax.swing.ImageIcon(scaledImage);
@@ -127,9 +128,18 @@ public class UserInterface{
 
             JButton removeButton = new JButton("Remove Transaction");
             removeButton.setBounds(0, 0, 10, 10);
-            removeButton.addActionListener(ev -> {   
-                // Your logic here
-                System.out.println("Remove Transaction clicked!");
+            removeButton.addActionListener(ev -> {  
+                JComboBox<Transaction> transactionDropBox = new JComboBox<>(allTransactions.toArray(new Transaction[0]));
+                int result = JOptionPane.showConfirmDialog(frame, transactionDropBox, "Select Transaction to Remove", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    Transaction selectedTransaction = (Transaction) transactionDropBox.getSelectedItem();
+                    if (selectedTransaction != null) {
+                        transactionManager.removeTransaction(selectedTransaction);
+                        allTransactions.remove(selectedTransaction);
+                        JOptionPane.showMessageDialog(frame, "Transaction removed: " + selectedTransaction.getName());
+                    }
+                }
+
             });
 
             JButton editButton = new JButton("Edit Transaction");
@@ -194,6 +204,7 @@ public class UserInterface{
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(36, 0, 10, 10);
         exitButton.addActionListener(e -> {
+            transactionManager.saveTransactions();
             System.exit(0);
         });
 
@@ -202,7 +213,7 @@ public class UserInterface{
         buttonPanel.add(spendButton);
         buttonPanel.add(savingButton);
         buttonPanel.add(exitButton);
-        
+
         frame.add(mainPanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
@@ -210,7 +221,6 @@ public class UserInterface{
             @Override
             public void windowClosing(WindowEvent e) {
                 transactionManager.saveTransactions();
-                System.out.println("Transactions saved.");
             }
         });
     }
