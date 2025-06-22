@@ -1,7 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
@@ -55,6 +54,8 @@ public class UserInterface{
     private JFrame frame;
     private JPanel mainPanel;
     private JPanel buttonPanel;
+    private JPanel recentPanel;
+    private int count = 0;
     private String weekLimit;
     private String monthLimit;
     private String savingGoal;
@@ -77,11 +78,13 @@ public class UserInterface{
         buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.LIGHT_GRAY);
         buttonPanel.setPreferredSize(new Dimension(720, 35));
+
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(1, 3));
-        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBackground(Color.LIGHT_GRAY);
         mainPanel.setPreferredSize(new Dimension(720, 35));
-        mainPanel.setPreferredSize(new Dimension(720, 35));
+
+        recentPanel = new JPanel();
+        recentPanel.setBackground(Color.LIGHT_GRAY);
 
         JButton transactionButton = new JButton("Transaction");
             transactionButton.setBounds(0, 0, 10, 10);
@@ -121,9 +124,6 @@ public class UserInterface{
                     JOptionPane.showMessageDialog(frame, "You selected: " + category);
                     transaction = new Transaction(name, amount, date[0], category);
                     transactionManager.addTransaction(transaction);
-                    System.out.println("Transaction added: " + transaction.getName());
-                } else {
-                    System.out.println("Transaction cancelled.");
                 }
             });
 
