@@ -17,18 +17,12 @@ public class TransactionManager {
     }
     
     public void updateDate(Transaction t, LocalDate date) {
-        allTransactions.remove(t);
         t.setDate(date);
-        allTransactions.add(t);
     }
 
     public void updateCategory(Transaction t, Transaction.Category category) {
         t.setCategory(category);
     }
-
-    // public void saveTransactions() {
-    //     BufferedWriter write = new BufferedWriter(new FileWriter("TransactionDatabase.txt"));
-    // }
 
     public void loadTransActions() {
         
