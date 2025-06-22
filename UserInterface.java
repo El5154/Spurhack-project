@@ -2,6 +2,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.util.Locale;
 import javax.swing.JButton;
@@ -10,6 +12,43 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+/**
+ * The {@code UserInterface} class provides a graphical user interface (GUI) for a budget tracker application.
+ * It allows users to manage transactions, set budget limits, view spending, and define saving goals.
+ * The interface is built using Java Swing components and organizes its main features into buttons and panels.
+ * <p>
+ * Key Features:
+ * <ul>
+ *   <li>Add, remove, and edit financial transactions (revenue or expense).</li>
+ *   <li>Set weekly and monthly budget limits.</li>
+ *   <li>View spending information (feature placeholder).</li>
+ *   <li>Set and manage saving goals.</li>
+ *   <li>Exit the application safely.</li>
+ * </ul>
+ * <p>
+ * The class maintains references to the main application frame, panels, and user input data such as budget limits and saving goals.
+ * It also interacts with a {@link TransactionManager} to manage transaction data.
+ * 
+ * Usage:
+ * <pre>
+ *     public static void main(String[] args) {
+ *         UserInterface ui = new UserInterface();
+ *     }
+ * </pre>
+ * 
+ * Dependencies:
+ * <ul>
+ *   <li>{@link javax.swing.JFrame}</li>
+ *   <li>{@link javax.swing.JPanel}</li>
+ *   <li>{@link javax.swing.JButton}</li>
+ *   <li>{@link javax.swing.JOptionPane}</li>
+ *   <li>{@link java.time.LocalDate}</li>
+ *   <li>{@link TransactionManager}</li>
+ *   <li>{@link Transaction}</li>
+ * </ul>
+ * 
+ * @version 1.0
+ */
 public class UserInterface{
 
     private JFrame frame;
@@ -163,8 +202,16 @@ public class UserInterface{
         buttonPanel.add(spendButton);
         buttonPanel.add(savingButton);
         buttonPanel.add(exitButton);
+        
         frame.add(mainPanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                transactionManager.saveTransactions();
+                System.out.println("Transactions saved.");
+            }
+        });
     }
 }
