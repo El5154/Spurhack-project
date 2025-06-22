@@ -1,10 +1,10 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -54,10 +54,13 @@ public class UserInterface{
     private JFrame frame;
     private JPanel mainPanel;
     private JPanel buttonPanel;
+    private JPanel recentPanel;
+    private int count = 0;
     private String weekLimit;
     private String monthLimit;
     private String savingGoal;
     private TransactionManager transactionManager = new TransactionManager();
+    private ArrayList<Transaction> allTransactions = transactionManager.getAllTransactions();
     private Transaction transaction;
     private boolean flag = true;
 
@@ -75,18 +78,21 @@ public class UserInterface{
         buttonPanel = new JPanel();
         buttonPanel.setBackground(Color.LIGHT_GRAY);
         buttonPanel.setPreferredSize(new Dimension(720, 35));
+
         mainPanel = new JPanel();
-        mainPanel.setLayout(new GridLayout(1, 3));
-        mainPanel.setBackground(Color.WHITE);
+        mainPanel.setBackground(Color.LIGHT_GRAY);
         mainPanel.setPreferredSize(new Dimension(720, 35));
-        mainPanel.setPreferredSize(new Dimension(720, 35));
+
+        recentPanel = new JPanel();
+        recentPanel.setBackground(Color.LIGHT_GRAY);
 
         JButton transactionButton = new JButton("Transaction");
             transactionButton.setBounds(0, 0, 10, 10);
             transactionButton.addActionListener(e -> {
             JButton addButton = new JButton("Add Transaction");
             addButton.setBounds(0, 0, 10, 10);
-            addButton.addActionListener(ev -> {   
+            addButton.addActionListener(ev -> { 
+                flag = true;  
                 String name = JOptionPane.showInputDialog(frame, "Enter transaction name:", "Transaction Name", JOptionPane.PLAIN_MESSAGE);
                 String amountStr = JOptionPane.showInputDialog(frame, "Enter transaction amount:", "Transaction Amount", JOptionPane.PLAIN_MESSAGE);
                 double amount = Double.parseDouble(amountStr);
@@ -108,7 +114,6 @@ public class UserInterface{
                 String[] options = {"REVENUE", "EXPENSE"};
                 JComboBox<String> categoryDropBox = new JComboBox<>(options);
 
-                // Load and resize the icon
                 javax.swing.ImageIcon originalIcon = new javax.swing.ImageIcon("Revenue&Expense.png");
                 java.awt.Image scaledImage = originalIcon.getImage().getScaledInstance(32, 32, java.awt.Image.SCALE_SMOOTH);
                 javax.swing.ImageIcon customIcon = new javax.swing.ImageIcon(scaledImage);
@@ -119,24 +124,95 @@ public class UserInterface{
                     JOptionPane.showMessageDialog(frame, "You selected: " + category);
                     transaction = new Transaction(name, amount, date[0], category);
                     transactionManager.addTransaction(transaction);
-                    System.out.println("Transaction added: " + transaction.getName());
-                } else {
-                    System.out.println("Transaction cancelled.");
                 }
             });
 
             JButton removeButton = new JButton("Remove Transaction");
             removeButton.setBounds(0, 0, 10, 10);
-            removeButton.addActionListener(ev -> {   
-                // Your logic here
-                System.out.println("Remove Transaction clicked!");
+            removeButton.addActionListener(ev -> {  
+                JComboBox<Transaction> transactionDropBox = new JComboBox<>(allTransactions.toArray(new Transaction[allTransactions.size()]));
+                int result = JOptionPane.showConfirmDialog(frame, transactionDropBox, "Select Transaction to Remove", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    Transaction selectedTransaction = (Transaction) transactionDropBox.getSelectedItem();
+                    if (selectedTransaction != null) {
+                        transactionManager.removeTransaction(selectedTransaction);
+                        allTransactions.remove(selectedTransaction);
+                        JOptionPane.showMessageDialog(frame, "Transaction removed: " + selectedTransaction.getName());
+                    }
+                }
+
             });
 
             JButton editButton = new JButton("Edit Transaction");
             editButton.setBounds(0, 0, 10, 10);
             editButton.addActionListener(ev -> {   
-                // Your logic here
-                System.out.println("Edit Transaction clicked!");
+                JComboBox<Transaction> transactionDropBox = new JComboBox<>(allTransactions.toArray(new Transaction[allTransactions.size()]));
+                int result = JOptionPane.showConfirmDialog(frame, transactionDropBox, "Select Transaction to Edit", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    Transaction selectedTransaction = (Transaction) transactionDropBox.getSelectedItem();
+                    if (selectedTransaction != null) {
+                        final String[] newName = { selectedTransaction.getName() };
+                        final double[] newAmount = {selectedTransaction.getAmount()};
+                        final Transaction.Category[] category = {selectedTransaction.getCategory()};
+                        final LocalDate[] newDate = {selectedTransaction.getDate()};
+
+                        JButton nameButton = new JButton("Edit Transaction");
+                        nameButton.setBounds(0, 0, 10, 10);
+                        nameButton.addActionListener(evv -> {
+                            newName[0] = JOptionPane.showInputDialog(frame, "Enter new transaction name:", selectedTransaction.getName());
+                        });
+
+                        JButton amountButton = new JButton("Edit Amount");
+                        amountButton.setBounds(12, 0, 10, 10);
+                        amountButton.addActionListener(evv -> {
+                            String newAmountStr = JOptionPane.showInputDialog(frame, "Enter new transaction amount:", selectedTransaction.getAmount());
+                            newAmount[0] = Double.parseDouble(newAmountStr);
+                        });
+
+                        JButton dateButton = new JButton("Edit Date");
+                        dateButton.setBounds(24, 0, 10, 10);
+                        dateButton.addActionListener(evv -> {
+                            flag = true; 
+                            while (flag) {
+                                try {
+                                    String dateStr = JOptionPane.showInputDialog(frame, "Enter new transaction date (YYYY-MM-DD):", selectedTransaction.getDate());
+                                    if (dateStr == null) {
+                                        flag = false;
+                                        return;
+                                    }
+                                    newDate[0] = LocalDate.parse(dateStr);
+                                    flag = false;
+                                } catch (java.time.format.DateTimeParseException e1) {
+                                    JOptionPane.showMessageDialog(frame, "Invalid date format. Please enter a valid date in YYYY-MM-DD format.", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                        });
+
+                        JButton categoryButton = new JButton("Edit Category");
+                        categoryButton.setBounds(36, 0, 10, 10);
+                        categoryButton.addActionListener(evv -> {
+                            String[] options = {"REVENUE", "EXPENSE"};
+                            JComboBox<String> categoryDropBox = new JComboBox<>(options);
+                            int categoryResult = JOptionPane.showConfirmDialog(frame, categoryDropBox, "Choose a category", JOptionPane.OK_CANCEL_OPTION);
+                            if (categoryResult == JOptionPane.OK_OPTION) {
+                                String selectedCategory = (String) categoryDropBox.getSelectedItem();
+                                category[0] = Transaction.Category.valueOf(selectedCategory.toUpperCase(Locale.ROOT));
+                            }
+                        });
+                        mainPanel.removeAll();
+                        mainPanel.add(nameButton);
+                        mainPanel.add(amountButton);
+                        mainPanel.add(dateButton);
+                        mainPanel.add(categoryButton);
+                        mainPanel.revalidate();
+                        mainPanel.repaint();
+
+                        transactionManager.updateName(selectedTransaction, newName[0]);
+                        transactionManager.updateAmount(selectedTransaction, newAmount[0]);
+                        transactionManager.updateDate(selectedTransaction, newDate[0]);
+                        transactionManager.updateCategory(selectedTransaction, category[0]);
+                    }
+                }
             });
 
             mainPanel.removeAll();
@@ -194,6 +270,7 @@ public class UserInterface{
         JButton exitButton = new JButton("Exit");
         exitButton.setBounds(36, 0, 10, 10);
         exitButton.addActionListener(e -> {
+            transactionManager.saveTransactions();
             System.exit(0);
         });
 
@@ -202,7 +279,7 @@ public class UserInterface{
         buttonPanel.add(spendButton);
         buttonPanel.add(savingButton);
         buttonPanel.add(exitButton);
-        
+
         frame.add(mainPanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
         frame.setVisible(true);
@@ -210,7 +287,6 @@ public class UserInterface{
             @Override
             public void windowClosing(WindowEvent e) {
                 transactionManager.saveTransactions();
-                System.out.println("Transactions saved.");
             }
         });
     }
