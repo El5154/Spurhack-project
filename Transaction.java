@@ -1,6 +1,11 @@
 import java.time.LocalDate;
+import java.io.BufferedWriter;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
     private String name;
     private double amount;
     private LocalDate date;
@@ -19,16 +24,16 @@ public class Transaction {
     }
 
     // setters used for when users want to make changes to a specific transaction
-    public void setName() {
-
-    }
-    public void setAmount() {
-
-    }
-    public void setDate() {
+    public void setName(String name) {
         
     }
-    public void setCategory() {
+    public void setAmount(double amount) {
+
+    }
+    public void setDate(LocalDate name) {
+        
+    }
+    public void setCategory(Category category) {
 
     }
 
@@ -45,6 +50,26 @@ public class Transaction {
     }
     public Category getCategory() {
         return this.category;
+    }
+
+
+    
+
+
+    @Override
+    public int compareTo(Transaction o) {
+        if (this.date.compareTo(o.date) != 0) {
+            return this.date.compareTo(o.date);
+        }
+        else if (this.name.compareTo(o.name) != 0) {
+            return this.name.compareTo(o.name);
+        }
+        else if (this.category.compareTo(o.category) != 0) {
+            return this.category.compareTo(o.category);
+        }
+        else {
+            return Double.compare(this.amount, o.amount);
+        }
     }
 }
 
