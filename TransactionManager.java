@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class TransactionManager {
     private ArrayList<Transaction> allTransactions = new ArrayList<>();
 
-
     // methods for updating the transaction properties
     public void updateName(Transaction t, String name) {
         t.setName(name);
@@ -32,7 +31,23 @@ public class TransactionManager {
     // }
 
     public void loadTransActions() {
+        
+    }
 
+    public void addTransaction(Transaction t) {
+        allTransactions.add(t);
+        saveTransactions();
+    }
+
+    public void saveTransactions() {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("TransactionDatabase.txt"))) {
+            for (Transaction t : allTransactions) {
+                writer.write(t.getName() + "," + t.getAmount() + "," + t.getDate() + "," + t.getCategory());
+                writer.newLine();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }

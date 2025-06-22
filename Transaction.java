@@ -1,9 +1,4 @@
 import java.time.LocalDate;
-import java.io.BufferedWriter;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Transaction implements Comparable<Transaction> {
     private String name;
@@ -12,7 +7,7 @@ public class Transaction implements Comparable<Transaction> {
     private Category category;
 
     public enum Category {
-        INCOME,
+        REVENUE,
         EXPENSE
     }  
 
