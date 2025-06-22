@@ -1,5 +1,8 @@
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -25,8 +28,32 @@ public class TransactionManager {
     }
 
     public void loadTransActions() {
-        
-    }
+        allTransactions = new ArrayList<>();
+        String filePath = "TransactionDatabase"; 
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                if (parts.length == 4) {
+                    String name = parts[0].trim();
+                    double amount = Double.parseDouble(parts[1].trim());
+                    LocalDate date = LocalDate.parse(parts[2].trim());
+                    String categoryStr = parts[3].trim().toUpperCase();
+                    Transaction.Category category = Transaction.Category.valueOf(categoryStr);
+
+                    Transaction t = new Transaction(name, amount, date, category);
+                    allTransactions.add(t);
+
+                }
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            }
+        }
 
     public void addTransaction(Transaction t) {
         allTransactions.add(t);
@@ -46,4 +73,5 @@ public class TransactionManager {
     }
 
 }
+
 
