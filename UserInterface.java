@@ -88,7 +88,8 @@ public class UserInterface{
             transactionButton.addActionListener(e -> {
             JButton addButton = new JButton("Add Transaction");
             addButton.setBounds(0, 0, 10, 10);
-            addButton.addActionListener(ev -> {   
+            addButton.addActionListener(ev -> { 
+                flag = true;  
                 String name = JOptionPane.showInputDialog(frame, "Enter transaction name:", "Transaction Name", JOptionPane.PLAIN_MESSAGE);
                 String amountStr = JOptionPane.showInputDialog(frame, "Enter transaction amount:", "Transaction Amount", JOptionPane.PLAIN_MESSAGE);
                 double amount = Double.parseDouble(amountStr);
@@ -129,7 +130,7 @@ public class UserInterface{
             JButton removeButton = new JButton("Remove Transaction");
             removeButton.setBounds(0, 0, 10, 10);
             removeButton.addActionListener(ev -> {  
-                JComboBox<Transaction> transactionDropBox = new JComboBox<>(allTransactions.toArray(new Transaction[0]));
+                JComboBox<Transaction> transactionDropBox = new JComboBox<>(allTransactions.toArray(new Transaction[allTransactions.size()]));
                 int result = JOptionPane.showConfirmDialog(frame, transactionDropBox, "Select Transaction to Remove", JOptionPane.OK_CANCEL_OPTION);
                 if (result == JOptionPane.OK_OPTION) {
                     Transaction selectedTransaction = (Transaction) transactionDropBox.getSelectedItem();
@@ -145,8 +146,73 @@ public class UserInterface{
             JButton editButton = new JButton("Edit Transaction");
             editButton.setBounds(0, 0, 10, 10);
             editButton.addActionListener(ev -> {   
-                // Your logic here
-                System.out.println("Edit Transaction clicked!");
+                JComboBox<Transaction> transactionDropBox = new JComboBox<>(allTransactions.toArray(new Transaction[allTransactions.size()]));
+                int result = JOptionPane.showConfirmDialog(frame, transactionDropBox, "Select Transaction to Edit", JOptionPane.OK_CANCEL_OPTION);
+                if (result == JOptionPane.OK_OPTION) {
+                    Transaction selectedTransaction = (Transaction) transactionDropBox.getSelectedItem();
+                    if (selectedTransaction != null) {
+                        final String[] newName = { selectedTransaction.getName() };
+                        final double[] newAmount = {selectedTransaction.getAmount()};
+                        final Transaction.Category[] category = {selectedTransaction.getCategory()};
+                        final LocalDate[] newDate = {selectedTransaction.getDate()};
+
+                        JButton nameButton = new JButton("Edit Transaction");
+                        nameButton.setBounds(0, 0, 10, 10);
+                        nameButton.addActionListener(evv -> {
+                            newName[0] = JOptionPane.showInputDialog(frame, "Enter new transaction name:", selectedTransaction.getName());
+                        });
+
+                        JButton amountButton = new JButton("Edit Amount");
+                        amountButton.setBounds(12, 0, 10, 10);
+                        amountButton.addActionListener(evv -> {
+                            String newAmountStr = JOptionPane.showInputDialog(frame, "Enter new transaction amount:", selectedTransaction.getAmount());
+                            newAmount[0] = Double.parseDouble(newAmountStr);
+                        });
+
+                        JButton dateButton = new JButton("Edit Date");
+                        dateButton.setBounds(24, 0, 10, 10);
+                        dateButton.addActionListener(evv -> {
+                            flag = true; 
+                            while (flag) {
+                                try {
+                                    String dateStr = JOptionPane.showInputDialog(frame, "Enter new transaction date (YYYY-MM-DD):", selectedTransaction.getDate());
+                                    if (dateStr == null) {
+                                        flag = false;
+                                        return;
+                                    }
+                                    newDate[0] = LocalDate.parse(dateStr);
+                                    flag = false;
+                                } catch (java.time.format.DateTimeParseException e1) {
+                                    JOptionPane.showMessageDialog(frame, "Invalid date format. Please enter a valid date in YYYY-MM-DD format.", "Error", JOptionPane.ERROR_MESSAGE);
+                                }
+                            }
+                        });
+
+                        JButton categoryButton = new JButton("Edit Category");
+                        categoryButton.setBounds(36, 0, 10, 10);
+                        categoryButton.addActionListener(evv -> {
+                            String[] options = {"REVENUE", "EXPENSE"};
+                            JComboBox<String> categoryDropBox = new JComboBox<>(options);
+                            int categoryResult = JOptionPane.showConfirmDialog(frame, categoryDropBox, "Choose a category", JOptionPane.OK_CANCEL_OPTION);
+                            if (categoryResult == JOptionPane.OK_OPTION) {
+                                String selectedCategory = (String) categoryDropBox.getSelectedItem();
+                                category[0] = Transaction.Category.valueOf(selectedCategory.toUpperCase(Locale.ROOT));
+                            }
+                        });
+                        mainPanel.removeAll();
+                        mainPanel.add(nameButton);
+                        mainPanel.add(amountButton);
+                        mainPanel.add(dateButton);
+                        mainPanel.add(categoryButton);
+                        mainPanel.revalidate();
+                        mainPanel.repaint();
+
+                        transactionManager.updateName(selectedTransaction, newName[0]);
+                        transactionManager.updateAmount(selectedTransaction, newAmount[0]);
+                        transactionManager.updateDate(selectedTransaction, newDate[0]);
+                        transactionManager.updateCategory(selectedTransaction, category[0]);
+                    }
+                }
             });
 
             mainPanel.removeAll();

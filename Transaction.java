@@ -48,7 +48,11 @@ public class Transaction implements Comparable<Transaction> {
     }
 
 
-
+    public String toString() {
+        return "Transaction{ " +
+                "name = '" + name + '\'' + "amount = " + amount +
+                ", date = " + date + "category = " + category + " }";
+    }
 
 
     @Override
