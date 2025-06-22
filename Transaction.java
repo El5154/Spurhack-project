@@ -25,16 +25,16 @@ public class Transaction implements Comparable<Transaction> {
 
     // setters used for when users want to make changes to a specific transaction
     public void setName(String name) {
-        
+        this.name = name;
     }
     public void setAmount(double amount) {
-
+        this.amount = amount;
     }
-    public void setDate(LocalDate name) {
-        
+    public void setDate(LocalDate date) {
+        this.date = date;
     }
     public void setCategory(Category category) {
-
+        this.category = category;
     }
 
 
@@ -53,7 +53,7 @@ public class Transaction implements Comparable<Transaction> {
     }
 
 
-    
+
 
 
     @Override

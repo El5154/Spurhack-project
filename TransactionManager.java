@@ -1,9 +1,11 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.time.LocalDate;
-import java.util.TreeSet;
+import java.util.ArrayList;
 
 
 public class TransactionManager {
-    private TreeSet<Transaction> allTransactions = new TreeSet<>();
+    private ArrayList<Transaction> allTransactions = new ArrayList<>();
 
 
     // methods for updating the transaction properties
@@ -23,6 +25,14 @@ public class TransactionManager {
 
     public void updateCategory(Transaction t, Transaction.Category category) {
         t.setCategory(category);
+    }
+
+    // public void saveTransactions() {
+    //     BufferedWriter write = new BufferedWriter(new FileWriter("TransactionDatabase.txt"));
+    // }
+
+    public void loadTransActions() {
+
     }
 
 }
