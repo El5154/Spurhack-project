@@ -4,9 +4,11 @@ import java.util.HashMap;
 public class Spending{
 
   private ArrayList<Transaction> spendingTransactions = new ArrayList<>();
+  private double totalSpending;
+  private int hasMonth;
 
   public Spending() {
-
+      
   }
 
   public HashMap<Integer, Double> getMonthlySpending(ArrayList<Transaction> spendingTransactions) {
@@ -32,14 +34,22 @@ public class Spending{
 
   public int getTimeToSave(double savingGoal) {
     int months = 0;
-    double totalSpending = 0.0;
+    totalSpending = 0.0;
+    hasMonth = 0;
     HashMap<Integer, Double> monthlySpending = getMonthlySpending(spendingTransactions);
     
     for (int i = 1; i <= 12; i++) {
-      totalSpending += monthlySpending.get(i);
+      totalSpending += monthlySpending.getOrDefault(i, 0.0);
+      if (monthlySpending.get(i) > 0) {
+        hasMonth++;
+      }
     }
     
     return (int) Math.round((savingGoal - totalSpending) % 12);
+  }
+
+  public double getAverageSpending() {
+      return totalSpending / hasMonth;
   }
 
   

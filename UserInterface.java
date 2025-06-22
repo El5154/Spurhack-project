@@ -292,7 +292,24 @@ public class UserInterface{
             JOptionPane setGoal = new JOptionPane("Saving Goal");
             setGoal.setBounds(0, 0, 10, 10);
             savingGoal = JOptionPane.showInputDialog(frame, "Set your saving goal:", "Saving Goal", JOptionPane.PLAIN_MESSAGE);
-            JOptionPane.showMessageDialog(null, "Your saving goal of " + savingGoal + " will take " + spending.getTimeToSave(Integer.parseInt(savingGoal)) + " months to achieve.");
+            double goalValue = Double.parseDouble(savingGoal);
+            double average = spending.getAverageSpending();
+
+            try {
+                String advice = GeminiAdvisor.getAdvice(Double.toString(goalValue), Double.toString(average));
+                
+                JTextArea adviceArea = new JTextArea(advice, 10, 30);
+                adviceArea.setLineWrap(true);
+                adviceArea.setWrapStyleWord(true);
+                adviceArea.setEditable(false);
+
+                JScrollPane adviceScroll = new JScrollPane(adviceArea);
+                JOptionPane.showMessageDialog(frame, adviceScroll, "Gemini Saving Advice... (Under development)", JOptionPane.INFORMATION_MESSAGE);
+                
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(frame, "Failed to get advice: " + ex.getMessage());
+            }
+            // JOptionPane.showMessageDialog(null, "Your saving goal of " + savingGoal + " will take " + spending.getTimeToSave(Integer.parseInt(savingGoal)) + " months to achieve.");
         });
 
         JButton exitButton = new JButton("Exit");
