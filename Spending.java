@@ -5,8 +5,12 @@ public class Spending{
 
   private ArrayList<Transaction> spendingTransactions = new ArrayList<>();
 
-  private HashMap<Integer, Double> spendingMap = new HashMap<>();
-  {
+  public Spending() {
+
+  }
+
+  public HashMap<Integer, Double> getMonthlySpending(ArrayList<Transaction> spendingTransactions) {
+    HashMap<Integer, Double> spendingMap = new HashMap<>();
       spendingMap.put(1, 0.0);
       spendingMap.put(2, 0.0);
       spendingMap.put(3, 0.0);
@@ -19,18 +23,23 @@ public class Spending{
       spendingMap.put(10, 0.0);
       spendingMap.put(11, 0.0);
       spendingMap.put(12, 0.0);
-  }
-  public Spending(ArrayList<Transaction> spendingTransactions) {
-      this.spendingTransactions = spendingTransactions;
-
-  }
-
-  public HashMap<Integer, Double> getMonthlySpending() {
       for (Transaction t : spendingTransactions) {
           spendingMap.put(t.getMonth(), spendingMap.get(t.getMonth()) + t.getAmount());
       }
 
       return spendingMap;
+  }
+
+  public int getTimeToSave(double savingGoal) {
+    int months = 0;
+    double totalSpending = 0.0;
+    HashMap<Integer, Double> monthlySpending = getMonthlySpending(spendingTransactions);
+    
+    for (int i = 1; i <= 12; i++) {
+      totalSpending += monthlySpending.get(i);
+    }
+    
+    return (int) Math.round((savingGoal - totalSpending) % 12);
   }
 
   

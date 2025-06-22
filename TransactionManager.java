@@ -10,13 +10,14 @@ import java.util.Collections;
 
 public class TransactionManager {
     private ArrayList<Transaction> allTransactions = new ArrayList<>();
-    private ArrayList<Transaction> spendingTransactions = new ArrayList<>();
+    private ArrayList<Transaction> spendingTransactions;
 
     public ArrayList<Transaction> getAllTransactions() {
         return allTransactions;
     }
 
     public ArrayList<Transaction> getSpendingTransactions() {
+        spendingTransactions = new ArrayList<>();
         for (Transaction t : allTransactions) {
             if (t.getCategory() == Transaction.Category.EXPENSE && LocalDate.now().getYear() == t.getYear()) {
                 spendingTransactions.add(t);

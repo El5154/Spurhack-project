@@ -61,6 +61,7 @@ public class UserInterface{
     private JPanel buttonPanel;
     private JPanel recentPanel;
     private JPanel historyPanel;
+    private JPanel savingPanel;
     private int count = 0;
     private String weekLimit;
     private String monthLimit;
@@ -79,8 +80,7 @@ public class UserInterface{
     public UserInterface() {
         transactionManager.loadTransActions();
         allTransactions = transactionManager.getAllTransactions();
-        spending = new Spending(transactionManager.getSpendingTransactions());
-        spendingMap = spending.getMonthlySpending();
+        spending = new Spending();
 
         frame = new JFrame("Budget Tracker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -109,6 +109,11 @@ public class UserInterface{
         historyPanel.setPreferredSize(new Dimension(200, 700));
         historyPanel.setLayout(new GridLayout(3, 4));
         historyPanel.setVisible(false);
+
+        savingPanel = new JPanel();
+        savingPanel.setBackground(Color.LIGHT_GRAY);
+        savingPanel.setPreferredSize(new Dimension(200, 700));
+        JLabel savingLabel = new JLabel("Time to save for " + savingGoal + ":");
 
         JButton transactionButton = new JButton("Transaction");
             transactionButton.setBounds(0, 0, 10, 10);
@@ -258,33 +263,6 @@ public class UserInterface{
             mainPanel.repaint();
         });
 
-        JButton budgetButton = new JButton("Budget");
-        budgetButton.setBounds(12, 0, 10, 10);
-        budgetButton.addActionListener(e -> {
-            historyPanel.setVisible(false);
-            JButton setWeekButton = new JButton("Set Weekly Budget");
-            setWeekButton.setBounds(0, 0, 10, 10);
-            setWeekButton.addActionListener(ev -> {   
-                JOptionPane setBudget = new JOptionPane("Budget Limit");
-                setBudget.setBounds(0, 0, 10, 10);
-                weekLimit = JOptionPane.showInputDialog(frame, "Set your weekly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
-            });
-
-            JButton setMonthButton = new JButton("Set Monthly Budget");
-            setMonthButton.setBounds(0, 0, 10, 10);
-            setMonthButton.addActionListener(ev -> {   
-                JOptionPane setBudget = new JOptionPane("Budget Limit");
-                setBudget.setBounds(0, 0, 10, 10);
-                monthLimit = JOptionPane.showInputDialog(frame, "Set your monthly budget limit:", "Budget Limit", JOptionPane.PLAIN_MESSAGE);
-            });
-
-            mainPanel.removeAll();
-            mainPanel.add(setWeekButton);
-            mainPanel.add(setMonthButton);
-            mainPanel.revalidate();
-            mainPanel.repaint();
-        });
-
         JButton spendButton = new JButton("View Spending");
         spendButton.setBounds(24, 0, 10, 10);
         spendButton.addActionListener(e -> {
@@ -294,7 +272,7 @@ public class UserInterface{
             historyPanel.removeAll();
             historyPanel.revalidate();
             historyPanel.repaint();
-            transactionManager.getSpendingTransactions();
+            spendingMap = spending.getMonthlySpending(transactionManager.getSpendingTransactions());
             String[] months = {"January", "February", "March", "April", "May", "June",
             "July", "August", "September", "October", "November", "December"};
             for (int i = 0; i < 12; i++) {
@@ -314,6 +292,7 @@ public class UserInterface{
             JOptionPane setGoal = new JOptionPane("Saving Goal");
             setGoal.setBounds(0, 0, 10, 10);
             savingGoal = JOptionPane.showInputDialog(frame, "Set your saving goal:", "Saving Goal", JOptionPane.PLAIN_MESSAGE);
+            JOptionPane.showMessageDialog(null, "Your saving goal of " + savingGoal + " will take " + spending.getTimeToSave(Integer.parseInt(savingGoal)) + " months to achieve.");
         });
 
         JButton exitButton = new JButton("Exit");
@@ -324,7 +303,6 @@ public class UserInterface{
         });
 
         buttonPanel.add(transactionButton);
-        buttonPanel.add(budgetButton);
         buttonPanel.add(spendButton);
         buttonPanel.add(savingButton);
         buttonPanel.add(exitButton);
