@@ -1,16 +1,21 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 /**
  * The {@code UserInterface} class provides a graphical user interface (GUI) for a budget tracker application.
@@ -55,13 +60,16 @@ public class UserInterface{
     private JPanel mainPanel;
     private JPanel buttonPanel;
     private JPanel recentPanel;
+    private JPanel historyPanel;
     private int count = 0;
     private String weekLimit;
     private String monthLimit;
     private String savingGoal;
     private TransactionManager transactionManager = new TransactionManager();
-    private ArrayList<Transaction> allTransactions = transactionManager.getAllTransactions();
+    private ArrayList<Transaction> allTransactions;
     private Transaction transaction;
+    private Spending spending;
+    private HashMap<Integer, Double> spendingMap;
     private boolean flag = true;
 
     public static void main(String[] args) {
@@ -69,6 +77,10 @@ public class UserInterface{
     }
 
     public UserInterface() {
+        transactionManager.loadTransActions();
+        allTransactions = transactionManager.getAllTransactions();
+        spending = new Spending(transactionManager.getSpendingTransactions());
+        spendingMap = spending.getMonthlySpending();
 
         frame = new JFrame("Budget Tracker");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -85,10 +97,23 @@ public class UserInterface{
 
         recentPanel = new JPanel();
         recentPanel.setBackground(Color.LIGHT_GRAY);
+        JTextArea recentTransactions = new JTextArea(5, 20);
+        recentTransactions.setLineWrap(true);
+        recentTransactions.setEditable(false);
+        recentTransactions.append("Recent Transactions:\n");
+
+        JScrollPane scrollPane = new JScrollPane(recentTransactions);
+
+        historyPanel = new JPanel();
+        historyPanel.setBackground(Color.LIGHT_GRAY);
+        historyPanel.setPreferredSize(new Dimension(200, 700));
+        historyPanel.setLayout(new GridLayout(3, 4));
+        historyPanel.setVisible(false);
 
         JButton transactionButton = new JButton("Transaction");
             transactionButton.setBounds(0, 0, 10, 10);
             transactionButton.addActionListener(e -> {
+            historyPanel.setVisible(false);
             JButton addButton = new JButton("Add Transaction");
             addButton.setBounds(0, 0, 10, 10);
             addButton.addActionListener(ev -> { 
@@ -124,6 +149,7 @@ public class UserInterface{
                     JOptionPane.showMessageDialog(frame, "You selected: " + category);
                     transaction = new Transaction(name, amount, date[0], category);
                     transactionManager.addTransaction(transaction);
+                    recentTransactions.append("Added Transaction: " + transaction.getName() + " on " + transaction.getDate() + "\n");
                 }
             });
 
@@ -138,6 +164,7 @@ public class UserInterface{
                         transactionManager.removeTransaction(selectedTransaction);
                         allTransactions.remove(selectedTransaction);
                         JOptionPane.showMessageDialog(frame, "Transaction removed: " + selectedTransaction.getName());
+                        recentTransactions.append("Removed Transaction: " + selectedTransaction.getName() + " on " + selectedTransaction.getDate() + "\n");
                     }
                 }
 
@@ -156,10 +183,12 @@ public class UserInterface{
                         final Transaction.Category[] category = {selectedTransaction.getCategory()};
                         final LocalDate[] newDate = {selectedTransaction.getDate()};
 
-                        JButton nameButton = new JButton("Edit Transaction");
+                        JButton nameButton = new JButton("Edit Name");
                         nameButton.setBounds(0, 0, 10, 10);
                         nameButton.addActionListener(evv -> {
                             newName[0] = JOptionPane.showInputDialog(frame, "Enter new transaction name:", selectedTransaction.getName());
+                            recentTransactions.append("Updated Transaction Name: " + selectedTransaction.getName() + " to " + newName[0] + "\n");
+                            transactionManager.updateName(selectedTransaction, newName[0]);
                         });
 
                         JButton amountButton = new JButton("Edit Amount");
@@ -167,6 +196,8 @@ public class UserInterface{
                         amountButton.addActionListener(evv -> {
                             String newAmountStr = JOptionPane.showInputDialog(frame, "Enter new transaction amount:", selectedTransaction.getAmount());
                             newAmount[0] = Double.parseDouble(newAmountStr);
+                            recentTransactions.append("Updated Transaction Amount: " + selectedTransaction.getName() + " to " + newAmount[0] + "\n");
+                            transactionManager.updateAmount(selectedTransaction, newAmount[0]);
                         });
 
                         JButton dateButton = new JButton("Edit Date");
@@ -181,6 +212,8 @@ public class UserInterface{
                                         return;
                                     }
                                     newDate[0] = LocalDate.parse(dateStr);
+                                    recentTransactions.append("Updated Transaction Date: " + selectedTransaction.getName() + " to " + newDate[0] + "\n");
+                                    transactionManager.updateDate(selectedTransaction, newDate[0]);
                                     flag = false;
                                 } catch (java.time.format.DateTimeParseException e1) {
                                     JOptionPane.showMessageDialog(frame, "Invalid date format. Please enter a valid date in YYYY-MM-DD format.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -197,6 +230,8 @@ public class UserInterface{
                             if (categoryResult == JOptionPane.OK_OPTION) {
                                 String selectedCategory = (String) categoryDropBox.getSelectedItem();
                                 category[0] = Transaction.Category.valueOf(selectedCategory.toUpperCase(Locale.ROOT));
+                                recentTransactions.append("Updated Transaction Category: " + selectedTransaction.getName() + " to " + category[0] + "\n");
+                                transactionManager.updateCategory(selectedTransaction, category[0]);
                             }
                         });
                         mainPanel.removeAll();
@@ -226,6 +261,7 @@ public class UserInterface{
         JButton budgetButton = new JButton("Budget");
         budgetButton.setBounds(12, 0, 10, 10);
         budgetButton.addActionListener(e -> {
+            historyPanel.setVisible(false);
             JButton setWeekButton = new JButton("Set Weekly Budget");
             setWeekButton.setBounds(0, 0, 10, 10);
             setWeekButton.addActionListener(ev -> {   
@@ -252,13 +288,26 @@ public class UserInterface{
         JButton spendButton = new JButton("View Spending");
         spendButton.setBounds(24, 0, 10, 10);
         spendButton.addActionListener(e -> {
-            // Your logic here
-            System.out.println("SPButton clicked!");
+            mainPanel.removeAll();
+            mainPanel.revalidate();
+            mainPanel.repaint();
+            historyPanel.removeAll();
+            historyPanel.revalidate();
+            historyPanel.repaint();
+            transactionManager.getSpendingTransactions();
+            String[] months = {"January", "February", "March", "April", "May", "June",
+            "July", "August", "September", "October", "November", "December"};
+            for (int i = 0; i < 12; i++) {
+                JLabel monthLabel = new JLabel(months[i] + ": " + spendingMap.getOrDefault(i + 1, 0.0));
+                historyPanel.add(monthLabel);
+            }
+            historyPanel.setVisible(true);
         });
         
         JButton savingButton = new JButton("Saving Goals");
         savingButton.setBounds(36, 0, 10, 10);
         savingButton.addActionListener(e -> {
+            historyPanel.setVisible(false);
             mainPanel.removeAll();
             mainPanel.revalidate();
             mainPanel.repaint();
@@ -282,6 +331,8 @@ public class UserInterface{
 
         frame.add(mainPanel, BorderLayout.NORTH);
         frame.add(buttonPanel, BorderLayout.SOUTH);
+        frame.add(scrollPane, BorderLayout.EAST);
+        frame.add(historyPanel, BorderLayout.CENTER);
         frame.setVisible(true);
         frame.addWindowListener(new WindowAdapter() {
             @Override

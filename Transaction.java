@@ -43,6 +43,15 @@ public class Transaction implements Comparable<Transaction> {
     public LocalDate getDate() {
         return this.date;
     }
+
+    public int getMonth() {
+        return this.date.getMonthValue();
+    }
+
+    public int getYear() {
+        return this.date.getYear();
+    }
+    
     public Category getCategory() {
         return this.category;
     }
@@ -60,8 +69,8 @@ public class Transaction implements Comparable<Transaction> {
         if (this.date.compareTo(o.date) != 0) {
             return this.date.compareTo(o.date);
         }
-        else if (this.name.compareTo(o.name) != 0) {
-            return this.name.compareTo(o.name);
+        else if (this.name.toUpperCase().compareTo(o.name.toUpperCase()) != 0) {
+            return this.name.toUpperCase().compareTo(o.name.toUpperCase());
         }
         else if (this.category.compareTo(o.category) != 0) {
             return this.category.compareTo(o.category);

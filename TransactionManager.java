@@ -5,15 +5,27 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 
 
 public class TransactionManager {
     private ArrayList<Transaction> allTransactions = new ArrayList<>();
+    private ArrayList<Transaction> spendingTransactions = new ArrayList<>();
 
     public ArrayList<Transaction> getAllTransactions() {
         return allTransactions;
     }
-    // methods for updating the transaction properties
+
+    public ArrayList<Transaction> getSpendingTransactions() {
+        for (Transaction t : allTransactions) {
+            if (t.getCategory() == Transaction.Category.EXPENSE && LocalDate.now().getYear() == t.getYear()) {
+                spendingTransactions.add(t);
+            }   
+        }
+        
+        return spendingTransactions;
+    }
+
     public void updateName(Transaction t, String name) {
         t.setName(name);
     }
@@ -32,7 +44,7 @@ public class TransactionManager {
 
     public void loadTransActions() {
         allTransactions = new ArrayList<>();
-        String filePath = "TransactionDatabase"; 
+        String filePath = "TransactionDatabase.txt"; 
 
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
@@ -49,10 +61,9 @@ public class TransactionManager {
 
                     Transaction t = new Transaction(name, amount, date, category);
                     allTransactions.add(t);
-
                 }
             }
-
+            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
             }
@@ -67,7 +78,7 @@ public class TransactionManager {
     }
 
     public void saveTransactions() {
-        allTransactions.sort(Transaction::compareTo);
+        Collections.sort(allTransactions);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("TransactionDatabase.txt"))) {
             for (Transaction t : allTransactions) {
                 writer.write(t.getName() + "," + t.getAmount() + "," + t.getDate() + "," + t.getCategory());
