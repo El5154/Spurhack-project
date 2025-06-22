@@ -40,6 +40,7 @@ public class TransactionManager {
     }
 
     public void saveTransactions() {
+        allTransactions.sort(Transaction::compareTo);
         try (BufferedWriter writer = new BufferedWriter(new FileWriter("TransactionDatabase.txt"))) {
             for (Transaction t : allTransactions) {
                 writer.write(t.getName() + "," + t.getAmount() + "," + t.getDate() + "," + t.getCategory());
